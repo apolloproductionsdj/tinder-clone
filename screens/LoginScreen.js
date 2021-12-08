@@ -3,13 +3,13 @@ import { View, Text } from 'react-native'
 import useAuth from '../hooks/useAuth';
 
 const LoginScreen = () => {
-    const { user } = useAuth();
-
+    const { signInWithGoogle } = useAuth();
     console.log(user)
 
     return (
         <View>
             <Text>I am the login screen</Text>
+            <Button title="login" onPress={signInWithGoogle} />
         </View>
     )
 }
