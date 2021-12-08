@@ -9,7 +9,8 @@ import useAuth from './hooks/useAuth';
 const Stack = createNativeStackNavigator();
 
 const StackNavigator = () => {
-    const user = useAuth();
+    const { user } = useAuth();
+
     return (
         <Stack.Navigator>
             {user ? (
@@ -21,9 +22,6 @@ const StackNavigator = () => {
                 <Stack.Screen name="Login" component={LoginScreen} />
 
             )}
-
-
-
         </Stack.Navigator>
 
     )
