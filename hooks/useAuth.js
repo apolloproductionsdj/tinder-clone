@@ -10,20 +10,22 @@ export const AuthProvider = ({ children }) => {
     const [error, setError] = useState(null);
     const [user, setUser] = useState(null);
     const [loadingInitial, setLoadingInitial] = useState(true);
+    const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        const unsub = onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // Logged in...
-                setUser(user)
-            } else {
-                setUser(null);
-            }
-            setLoadingInitial(false)
-        });
+    useEffect(
+        () =>
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    // Logged in...
+                    setUser(user);
+                } else {
+                    setUser(null);
+                }
 
-        return unsub();
-    }, []);
+                setLoadingInitial(false);
+            }),
+        []
+    );
 
     const config = {
         iosClientId: '621676818186-ub6agv23oq5f7ja15bfsi9n1ett6m5pe.apps.googleusercontent.com',
@@ -32,7 +34,15 @@ export const AuthProvider = ({ children }) => {
         permissions: ["public_profile", "email", "gender", "location"],
     }
 
+    const logout = () => {
+        setLoading(true);
+
+        signOut(auth).catch((error) => setError(error)).finally(() => setLoading(false));
+    }
+
     const signInWithGoogle = async () => {
+        setLoading(true);
+
         await Google.logInAsync(config).then(async (logInResult) => {
             if (logInResult.type === 'success') {
                 const { idToken, accessToken } = logInResult;
@@ -41,12 +51,16 @@ export const AuthProvider = ({ children }) => {
             }
 
             return Promise.reject();
-        }).catch(error => setError(error));
+        }).catch(error => setError(error))
+            .finally(() => setLoading(false));
     }
 
     return (
         <AuthContext.Provider value={{
             user,
+            loading,
+            error,
+            logout,
             signInWithGoogle
         }}>
             {!loadingInitial && children}
